@@ -1,5 +1,7 @@
 # VRP-Nachbarschaften – Züge zwischen Routen – Streamlit-Demo
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-vrp-nachbarschaften-demo.streamlit.app/)**
+
 Zehntes Stück der **Trajektorien-Metaheuristiken-Linie** der "Konzepte"-Reihe für die Website "Sebastian Hanisch – Operations Research und Machine Learning", 3. Zweig des **Nachbarschafts-Zweigs** (neben [lin-kernighan-demo](../lin-kernighan-demo) und [dynasearch-demo](../dynasearch-demo)) - und der Aufbau der **CVRP-Infrastruktur**, die auch das letzte Stück dieser Linie (ALNS) braucht:
 dieselbe geometrische Basis wie [hill-climbing-demo](../hill-climbing-demo) und alle Geschwisterstücke (Depot in der Mitte, Kundenstopps in einem 100 × 100-km-Gebiet), um Bedarfe je Kunde und eine Fahrzeug-Kapazität erweitert.
 
