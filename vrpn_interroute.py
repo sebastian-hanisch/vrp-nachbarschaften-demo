@@ -296,4 +296,5 @@ def descend(D, routes, demands, capacity, active_moves=MOVE_TYPES, max_segment=3
         if keep_steps:
             steps.append(Step((kind, move), [r.copy() for r in routes], cost))
     cost = T.solution_cost(routes, D)                                        # Rundungsfehler der Delta-Summe beseitigen
+    routes = [r for r in routes if len(r)]                                   # Züge (Relocate eines Einzelkunden, 2-opt*-Fusion) können eine Route leeren - eine leere Route ist keine Route (Routenzahl, Karte, Auslastung)
     return Descent(routes, cost, steps, evaluations, n_moves, kinds)
