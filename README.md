@@ -16,15 +16,15 @@ hill-climbing-demo (Wurzel: nur bergab, bleibt im ersten Optimum stecken)       
         ├─ lin-kernighan-demo (variable Tiefe statt fixer 2-opt-Nachbarschaft)  [gebaut]
         ├─ dynasearch-demo (viele unabhängige Züge auf einmal statt einer)      [gebaut]
         └─ vrp-nachbarschaften-demo (Züge ZWISCHEN Routen, CVRP-Infrastruktur)  [dieses Stück]
-              └─ ALNS (destroy/repair, baut auf dieser Infrastruktur auf)        [nicht gebaut]
+              └─ alns-demo (destroy/repair, baut auf dieser Infrastruktur auf)      [gebaut]
 ```
 
-Ergebnis in Kürze: **Inter-Route-Züge helfen klar** - bei mittlerer Kapazität verdoppelt sich die Verbesserung gegenüber reiner Intra-Route-Suche fast (2.47 % gegen 0.87 % bei Kapazität 120). Aber die Vorab-Vermutung "mehr Routen (kleinere Kapazität) heißt mehr Wert für Inter-Route-Züge" stimmt **nicht**: der Wert hat ein **Optimum bei mittlerer Kapazität**, nicht bei kleiner (0.36 % bei Kapazität 15, die Routen sind zu winzig für sinnvolle Umbauten) oder sehr großer (0 % bei einer Route, es gibt keine andere Route mehr zum Tauschen). Unter den vier Zugarten trägt **2-opt\*** allein fast so viel bei wie alle vier zusammen (2.36 % gegen 2.47 %) - **CROSS-exchange**, obwohl es 2-opt\* beweisbar verallgemeinert, bleibt allein schwächer (1.46 %), weil die Segmentlänge hier auf 3 begrenzt ist.
+Ergebnis in Kürze: **Inter-Route-Züge helfen klar** - bei mittlerer Kapazität verdreifacht sich die Verbesserung gegenüber reiner Intra-Route-Suche fast (2.47 % gegen 0.87 % bei Kapazität 120). Aber die Vorab-Vermutung "mehr Routen (kleinere Kapazität) heißt mehr Wert für Inter-Route-Züge" stimmt **nicht**: der Wert hat sein **Maximum bei mittlerer Kapazität** (3.68 % bei Kapazität 250, 2.47 % bei 120), nicht bei kleiner (0.36 % bei Kapazität 15, die Routen sind zu winzig für sinnvolle Umbauten) oder sehr großer (bei einer Route 1.16 %, ganz ohne Inter-Route-Anteil, es gibt keine andere Route mehr zum Tauschen). Unter den vier Zugarten trägt **2-opt\*** allein fast so viel bei wie alle vier zusammen (2.36 % gegen 2.47 %) - **CROSS-exchange**, obwohl es 2-opt\* beweisbar verallgemeinert, bleibt allein schwächer (1.46 %), weil die Segmentlänge hier auf 3 begrenzt ist.
 
 | Frage | Ergebnis (60 gleichverteilte Stopps, Kapazität 60, 200 Tausend Vorschläge, sofern nicht anders angegeben; Mittel über 5 feste Instanzen, Seeds 100000–100004; Verbesserung = Prozent ggü. der Savings-Konstruktion) |
 |---|---|
 | Standardfall | ✅ volle Nachbarschaft **0.98 %** besser als die Konstruktion - reine Intra-Route-Suche allein nur **0.61 %** |
-| **Ablation (bei Kapazität 120, dort am wirksamsten)** | ⚠️ Konstruktion 0.00 %, +Intra 0.87 %, +Relocate 1.02 %, +Swap 0.99 %, **+2-opt\* 2.36 %**, +CROSS-exchange 1.46 %, volle Nachbarschaft **2.47 %** |
+| **Ablation (bei Kapazität 120, mittlere Kapazität)** | ⚠️ Konstruktion 0.00 %, +Intra 0.87 %, +Relocate 1.02 %, +Swap 0.99 %, **+2-opt\* 2.36 %**, +CROSS-exchange 1.46 %, volle Nachbarschaft **2.47 %** |
 | **Kapazitäts-Sweep** | ⚠️ 15/30/60/120/250/600: **0.36**/1.23/0.98/**2.47**/**3.68**/1.16 % - NICHT monoton, Optimum bei mittlerer Kapazität |
 | **Budget-Sweep** | ✅ 10T/25T/50T/100T-2M: 0.49/0.84/0.91/**0.98 %** (konvergiert, ~66 Tausend Bewertungen im Mittel gebraucht) |
 | **Skalierung (200-Tausend-Budget, Kapazität 60 fest)** | ⚠️ 20/40/60/100/150/200 Stopps: 1.19/2.11/0.98/0.98/0.57/**0.20 %** - sinkt bei großen Instanzen |
@@ -64,7 +64,7 @@ Die einzelne Standardinstanz (Seed 35) zeigt dasselbe Muster wie die Sweep-Mitte
 
 ## Was nicht funktioniert hat / Grenzen
 
-- **Vorab-Vermutung: "mehr Routen (kleinere Kapazität) heißt mehr Wert für Inter-Route-Züge"** – **widerlegt**. Der Wert hat ein Optimum bei MITTLERER Kapazität (2.47 % bei Kapazität 120, im Mittel 3 Routen) - bei sehr kleiner Kapazität (15, ~24 winzige Routen) sind die Routen zu klein für sinnvolle Umbauten (nur 0.36 %), bei sehr großer (eine Route) gibt es strukturell keine andere Route mehr zum Tauschen (0 % Zusatz). Ein weiteres nicht-monotones Optimum in dieser Linie - inzwischen fast die Regel, nicht die Ausnahme.
+- **Vorab-Vermutung: "mehr Routen (kleinere Kapazität) heißt mehr Wert für Inter-Route-Züge"** – **widerlegt**. Der Wert hat sein Maximum bei MITTLERER Kapazität (3.68 % bei Kapazität 250, 2.47 % bei Kapazität 120 mit im Mittel 3 Routen) - bei sehr kleiner Kapazität (15, ~24 winzige Routen) sind die Routen zu klein für sinnvolle Umbauten (nur 0.36 %), bei sehr großer (eine Route) gibt es strukturell keine andere Route mehr zum Tauschen (0 % Zusatz). Ein weiteres nicht-monotones Optimum in dieser Linie - inzwischen fast die Regel, nicht die Ausnahme.
 - **2-opt\* trägt allein fast so viel bei wie die volle Nachbarschaft** (2.36 % gegen 2.47 % bei Kapazität 120) - **CROSS-exchange bleibt allein schwächer** (1.46 %), obwohl es 2-opt\* beweisbar verallgemeinert: die Segmentlänge ist hier auf `MAX_SEGMENT=3` begrenzt (wie das Or-opt der Wurzel), 2-opt\* kann dagegen beliebig lange Routen-Enden tauschen. Ein ehrlicher, erklärbarer Befund - keine Implementierungslücke, sondern eine bewusste Tractability-Grenze.
 - **Kein Intra-Route-Or-opt**: die Intra-Route-Suche ist hier auf 2-opt beschränkt (Or-opt wäre der Spezialfall des CROSS-exchange mit gleicher Quell- und Zielroute - kein eigenes Modul). Der TSP-Sonderfall reduziert deshalb auf einen reinen 2-opt-, nicht 2opt+oropt-Abstieg der Wurzel (bytegleich geprüft gegen genau diesen, nicht gegen den stärkeren).
 - **CROSS-exchange-Segmente werden nicht umgekehrt** (nur die Reihenfolge wird getauscht) - eine bewusste Vereinfachung gegenüber der vollen Literatur-Definition.
@@ -113,6 +113,4 @@ pytest tests/ -v
 
 ---
 
-Teil des [Operations-Research-Demo-Portfolios](https://sebastianhanisch.net/demos.html) von
-[Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning.
-Interesse an einer maßgeschneiderten Lösung? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html).
+Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zur Reihe: [Trajektorien-Metaheuristiken: HC bis ALNS](https://sebastianhanisch.net/konzepte-trajektorien-metaheuristiken.html).

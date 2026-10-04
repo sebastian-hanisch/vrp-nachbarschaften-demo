@@ -6,7 +6,7 @@
   46(12), 1433-1446): die ENDEN zweier Routen ab je einer Position werden vertauscht (Route A bis Position i +
   Route B ab Position j, und umgekehrt) - verändert oft viele Kunden auf einmal.
 - **CROSS-exchange** (Taillard, Badeau, Gendreau, Guertin & Potvin 1997, *A Tabu Search Heuristic for the VRP
-  with Time Windows*, Transportation Science 31(2), 170-186): ein Segment (Länge 1..MAX_SEGMENT, feste
+  with Soft Time Windows*, Transportation Science 31(2), 170-186): ein Segment (Länge 1..MAX_SEGMENT, feste
   Reihenfolge - keine Segment-Umkehrung, siehe Grenzen) wird zwischen zwei Routen getauscht. Beweisbar (nicht nur
   behauptet) die Verallgemeinerung der drei anderen Züge: Segmentlänge 1/1 == Swap, Segmentlänge bis Routenende auf
   beiden Seiten == 2-opt\\* (beide gegen die eigenständige Herleitung von `find_two_opt_star_move`/`find_swap_move`

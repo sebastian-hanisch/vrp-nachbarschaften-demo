@@ -31,7 +31,7 @@ MAX_SEGMENT = 3                    # Segmentlänge für CROSS-exchange, wie das 
 # --- Tausend, sofern nicht anders angegeben; 2026-09-23, alle Werte über ev.sweep/ev.run_config/ev.scaling_table/
 # --- ev.compare_active_moves nachgerechnet, s. tests/test_claims.py) ---------------------------------------------
 # ABLATION (Konstruktion vs. +Intra vs. +einzelner Inter-Route-Typ vs. volle Nachbarschaft), Kapazität 120 (dort
-#   trägt Inter-Route am meisten bei, siehe Kapazitäts-Sweep unten): Konstruktion 0.00 %, +Intra 0.87 %, +Relocate
+#   trägt Inter-Route deutlich bei, das Maximum des Sweeps liegt bei 250 mit 3.68 %, siehe unten): Konstruktion 0.00 %, +Intra 0.87 %, +Relocate
 #   1.02 %, +Swap 0.99 %, +2-opt* 2.36 %, +CROSS-exchange 1.46 %, volle Nachbarschaft 2.47 % - 2-opt* trägt
 #   ALLEIN fast so viel bei wie alle vier Inter-Route-Typen zusammen; CROSS-exchange bleibt trotz der bewiesenen
 #   Verallgemeinerung (siehe tests/test_interroute.py) ALLEIN schwächer als 2-opt* allein, weil die Segmentlänge
@@ -69,12 +69,12 @@ PRESETS = {
 }
 # Bei Instanz-Seed 35 (Standardfall); "Verbesserung" = Prozent ggü. der Savings-Konstruktion
 PRESET_HELP = {
-    "Standardfall (Voreinstellung)": "60 Stopps, Kapazität 60 (im Mittel 6 Routen), 200 Tausend Vorschläge: die volle Nachbarschaft verbessert die Savings-Konstruktion im Mittel um 0.98 % - reine Intra-Route-Suche allein nur um 0.61 %.",
-    "Nur Intra-Route (Kontrolle)": "Dieselbe Instanz, aber OHNE Inter-Route-Züge (wie auf einer einzelnen TSP-Tour): 0.61 % statt 0.98 % - Relocate/Swap/2-opt*/CROSS-exchange bringen zusammen fast so viel wie die reine Intra-Route-Suche allein.",
-    "Kleine Kapazität (viele Routen)": "Kapazität 15 (im Mittel knapp 24 winzige Routen): nur 0.36 % Verbesserung - die Routen sind zu klein für nennenswerte Umbauten, obwohl es hier am meisten potenzielle Tauschpartner gibt.",
-    "Mittlere Kapazität (Inter-Route-Optimum)": "Kapazität 120 (im Mittel 3 Routen): 2.47 % Verbesserung - das gemessene Optimum des Kapazitäts-Reglers, größer als bei kleiner UND bei sehr großer Kapazität.",
+    "Standardfall (Voreinstellung)": "60 Stopps, Kapazität 60 (im Mittel 6 Routen), 200 Tausend Vorschläge: die volle Nachbarschaft verbessert die Savings-Konstruktion im Mittel über die 5 festen Sweep-Instanzen um 0.98 % - reine Intra-Route-Suche allein nur um 0.61 % (die geladene Instanz Seed 35 liegt bei 0.26 % bzw. 0.17 %).",
+    "Nur Intra-Route (Kontrolle)": "Dieselbe Instanz, aber OHNE Inter-Route-Züge (wie auf einer einzelnen TSP-Tour): im Mittel über die 5 festen Sweep-Instanzen 0.61 % statt 0.98 % - Relocate/Swap/2-opt*/CROSS-exchange bringen zusammen weitere 0.37 Prozentpunkte.",
+    "Kleine Kapazität (viele Routen)": "Kapazität 15 (im Mittel knapp 24 winzige Routen): im Mittel über die 5 festen Sweep-Instanzen nur 0.36 % Verbesserung - die Routen sind zu klein für nennenswerte Umbauten, obwohl es hier am meisten potenzielle Tauschpartner gibt.",
+    "Mittlere Kapazität (Inter-Route-Optimum)": "Kapazität 120 (im Mittel 3 Routen): im Mittel über die 5 festen Sweep-Instanzen 2.47 % Verbesserung - deutlich mehr als bei kleiner (0.36 %) und bei sehr großer Kapazität (1.16 %); das Maximum des Kapazitäts-Sweeps liegt sogar noch höher (3.68 % bei Kapazität 250). Die geladene Instanz Seed 35 zeigt 6.49 %.",
     "Sehr große Kapazität (TSP-Sonderfall)": "Kapazität weit über dem Gesamtbedarf: genau EINE Route - die Instanz reduziert sich auf die TSP-Wurzel dieser Linie, nachweislich mit identischem Ergebnis zu deren 2-opt-Abstieg.",
-    "Großes Budget (1 Million)": "1 Million statt 200 Tausend Vorschläge bei Standard-Kapazität: kein Unterschied (0.98 % beide) - die Suche konvergiert hier bereits deutlich unter 100 Tausend Bewertungen.",
+    "Großes Budget (1 Million)": "1 Million statt 200 Tausend Vorschläge bei Standard-Kapazität: kein Unterschied (im Mittel über die 5 festen Sweep-Instanzen 0.98 % beide) - die Suche konvergiert hier bereits deutlich unter 100 Tausend Bewertungen.",
 }
 # Beobachtete Spannweite der Verbesserung ggü. Konstruktion über die 5 festen Sweep-Instanzen (mit Sicherheitsabstand) -
 # diese Suche ist deterministisch (kein Ketten-Seed), die Spannweite kommt allein aus der Instanz-Geometrie.

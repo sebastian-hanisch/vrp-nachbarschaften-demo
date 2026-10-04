@@ -75,7 +75,7 @@ Auf einer einzelnen TSP-Tour wirken 2-opt und Or-opt nur INNERHALB dieser einen 
 mit einer **Kapazitätsgrenze** mehrere Routen fahren, werden **Inter-Route-Züge** möglich, die es auf einer
 einzelnen Tour gar nicht geben kann: **Relocate** (ein Kunde wandert in eine andere Route), **Swap** (zwei Kunden
 tauschen die Route), **2-opt\\*** (die Enden zweier Routen werden vertauscht) und **CROSS-exchange** (ein Segment
-wird zwischen zwei Routen getauscht - die Verallgemeinerung der drei anderen). Bringen diese Züge gegenüber einer
+wird zwischen zwei Routen getauscht - die Verallgemeinerung von Swap und 2-opt\\*). Bringen diese Züge gegenüber einer
 reinen Savings-Konstruktion mit Intra-Route-Suche etwas? Und wächst ihr Wert, wenn die Kapazität sinkt und mehr
 Routen erzwungen werden?
 """
@@ -134,7 +134,7 @@ with st.sidebar:
     )
     capacity = st.slider(
         "Fahrzeug-Kapazität", *bounds("capacity_slider"), key="capacity_slider", step=C.CAPACITY_STEP,
-        help="Sehr klein = viele winzige Routen, sehr groß = eine einzige Route (der TSP-Sonderfall). Der Wert der Inter-Route-Züge ist NICHT monoton: er hat ein Optimum bei MITTLERER Kapazität (2.47 % bei Kapazität 120), nicht bei sehr kleiner (0.36 % bei 15) oder sehr großer (0 % bei einer Route).",
+        help="Sehr klein = viele winzige Routen, sehr groß = eine einzige Route (der TSP-Sonderfall). Der Wert der Inter-Route-Züge ist NICHT monoton: er hat sein Maximum bei MITTLERER Kapazität (3.68 % bei Kapazität 250, 2.47 % bei 120), nicht bei sehr kleiner (0.36 % bei 15) oder sehr großer (bei einer Route 1.16 %, ganz ohne Inter-Route-Anteil).",
     )
     moves = st.multiselect(
         "Aktive Zugarten", options=list(IR.MOVE_TYPES), key="moves_select",
@@ -236,7 +236,7 @@ if st.session_state.get("ablation_on"):
         rows_abl = _ablation(replace(base_sweep, capacity=120))
     labels = list(rows_abl.keys())
     st.plotly_chart(build_ablation_bar(labels, [rows_abl[l]["improvement"] for l in labels]), width="stretch", key="ablation_chart")
-    st.caption("Mittel über 5 feste Instanzen bei Kapazität 120 (dort trägt Inter-Route am meisten bei, siehe Kapazitäts-Sweep). "
+    st.caption("Mittel über 5 feste Instanzen bei Kapazität 120 (mittlere Kapazität, bei der Inter-Route deutlich beiträgt, siehe Kapazitäts-Sweep). "
                "2-opt* trägt allein fast so viel bei wie alle vier Inter-Route-Typen zusammen - CROSS-exchange bleibt trotz der bewiesenen Verallgemeinerung schwächer, weil die Segmentlänge hier auf 3 begrenzt ist.")
 
 st.markdown("---")
@@ -261,7 +261,7 @@ st.markdown(
     """
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
-| **Kapazität liegt in einem mittleren Bereich** | Der Wert der Inter-Route-Nachbarschaft ist NICHT monoton - bei sehr kleiner Kapazität (0.36 % bei Kapazität 15) sind die Routen zu winzig für Umbauten, bei sehr großer (0 % bei einer Route) gibt es keine andere Route mehr zum Tauschen. Das Optimum liegt dazwischen (2.47 % bei Kapazität 120). | (kein Nachfolger nötig - eine echte, gemessene Eigenschaft, keine Lücke) |
+| **Kapazität liegt in einem mittleren Bereich** | Der Wert der Inter-Route-Nachbarschaft ist NICHT monoton - bei sehr kleiner Kapazität (0.36 % bei Kapazität 15) sind die Routen zu winzig für Umbauten, bei sehr großer (bei einer Route 1.16 %, ganz ohne Inter-Route-Anteil) gibt es keine andere Route mehr zum Tauschen. Das Maximum liegt dazwischen (3.68 % bei Kapazität 250, 2.47 % bei 120). | (kein Nachfolger nötig - eine echte, gemessene Eigenschaft, keine Lücke) |
 | **Kein Or-opt innerhalb einer Route** | Intra-Route-Suche ist hier bewusst auf 2-opt beschränkt (Or-opt wäre der Spezialfall des CROSS-exchange mit gleicher Quell- und Zielroute, kein eigenes Modul) - der TSP-Sonderfall reduziert deshalb auf einen reinen 2-opt-, nicht 2opt+oropt-Abstieg der Wurzel. | **ALNS** (destroy/repair-Operatoren, letztes Stück dieser Linie, baut auf dieser Infrastruktur auf) |
 | **CROSS-exchange-Segmente werden nicht umgekehrt** | Nur die Reihenfolge wird getauscht, keine Spiegelung des Segments - eine bewusste Vereinfachung gegenüber der vollen Literatur-Definition, die auch Umkehrung erlaubt. | (kein Nachfolger nötig - eine dokumentierte Vereinfachung) |
 | **Kein Zufall im Kern** | Anders als jedes bisherige Stück dieser Linie streut diese Suche NICHT über Ketten - Savings-Konstruktion und bestes-Verbesserung-Suche sind vollständig deterministisch. | (kein Nachfolger nötig - eine echte methodische Eigenschaft dieses Stücks) |
@@ -284,7 +284,7 @@ d_{\text{prev},\text{next}}$), an Position $q$ in Route $B$ einfügen (Kosten an
 **Swap(1,1).** Kunden $c_1 \in A$, $c_2 \in B$ tauschen die Position - Δ ergibt sich aus den vier geänderten
 Kanten um $c_1$ und $c_2$.
 
-**2-opt\\* (Potvin & Rousseau 1995).** $A' = A[:i] + B[j:]$, $B' = B[:j] + A[i:]$ - zwei entfernte, zwei neue Kante.
+**2-opt\\* (Potvin & Rousseau 1995).** $A' = A[:i] + B[j:]$, $B' = B[:j] + A[i:]$ - zwei entfernte, zwei neue Kanten.
 
 **CROSS-exchange (Taillard et al. 1997).** Segmente $A[p_1{:}p_1{+}l_1]$ und $B[p_2{:}p_2{+}l_2]$ tauschen die
 Route (feste Reihenfolge). Bei $l_1=l_2=1$ **exakt** Swap, bei Segmenten bis zum Routenende **exakt** 2-opt\\*
@@ -294,8 +294,8 @@ Route (feste Reihenfolge). Bei $l_1=l_2=1$ **exakt** Swap, bei Segmenten bis zum
 
 **Literatur.** Potvin, J.-Y., & Rousseau, J.-M. (1995). *An Exchange Heuristic for Routeing Problems with Time
 Windows.* Journal of the Operational Research Society, 46(12), 1433-1446. Taillard, E. D., Badeau, P., Gendreau,
-M., Guertin, F., & Potvin, J.-Y. (1997). *A Tabu Search Heuristic for the Vehicle Routing Problem with Time
-Windows.* Transportation Science, 31(2), 170-186. Clarke, G., & Wright, J. W. (1964). *Scheduling of Vehicles
+M., Guertin, F., & Potvin, J.-Y. (1997). *A Tabu Search Heuristic for the Vehicle Routing Problem with Soft
+Time Windows.* Transportation Science, 31(2), 170-186. Clarke, G., & Wright, J. W. (1964). *Scheduling of Vehicles
 from a Central Depot to a Number of Delivery Points.* Operations Research, 12(4), 568-581.
 
 Implementiert in `vrpn_tour.py` (Routendarstellung, Intra-Route-2-opt), `vrpn_construction.py`
@@ -307,6 +307,6 @@ Implementiert in `vrpn_tour.py` (Routendarstellung, Intra-Route-2-opt), `vrpn_co
 st.markdown("---")
 st.caption(
     "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
-    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
-    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
+    "Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). "
+    "Mehr zur Reihe: [Trajektorien-Metaheuristiken: HC bis ALNS](https://sebastianhanisch.net/konzepte-trajektorien-metaheuristiken.html)."
 )
